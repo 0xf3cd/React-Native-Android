@@ -10,6 +10,7 @@ import {
 	ScrollView,
 	TouchableNativeFeedback
 } from 'react-native';
+import NetInfo from "@react-native-community/netinfo";
 
 import { NativeModules } from "react-native";
 const SysInfo = NativeModules.SysInfo;
@@ -151,7 +152,7 @@ export default class App extends Component {
 				</View>
 
 				<View style={{flex: 1, flexDirection: 'row', height: 50}}>
-					<TouchableNativeFeedback
+				<TouchableNativeFeedback
 						onPress={() => {
 							SysInfo.getCurrentTime(x => {
 								this.setState(previousState => {
@@ -162,6 +163,34 @@ export default class App extends Component {
 						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
 						<View style={styles.button}>
 							<Text style={styles.buttonText}>当前时间</Text>
+						</View>
+					</TouchableNativeFeedback>
+
+					<TouchableNativeFeedback
+						onPress={async () => {
+							SysInfo.getConnectionType(x => {
+								this.setState(previousState => {
+									return {showText: '网络连接情况为：\n' + x};
+								});
+							});
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>网络连接状况</Text>
+						</View>
+					</TouchableNativeFeedback>
+
+					<TouchableNativeFeedback
+						onPress={async () => {
+							SysInfo.turnOnWifi4G(x => {
+								this.setState(previousState => {
+									return {showText: x};
+								});
+							});
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>打开网络连接</Text>
 						</View>
 					</TouchableNativeFeedback>
 				</View>

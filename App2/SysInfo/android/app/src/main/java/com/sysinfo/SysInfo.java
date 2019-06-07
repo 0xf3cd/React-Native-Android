@@ -32,6 +32,13 @@ import android.text.TextUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodInfo;
 
+import android.net.ConnectivityManager; 
+import android.net.NetworkInfo; 
+import android.net.wifi.WifiManager;
+import android.telephony.TelephonyManager;
+
+import java.lang.reflect.*;
+
 public class SysInfo extends ReactContextBaseJavaModule {
     public SysInfo(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -171,5 +178,158 @@ public class SysInfo extends ReactContextBaseJavaModule {
 
         // Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
         callback.invoke(result);
+    }
+
+    public boolean isNetworkConnected(Context context) { 
+        if (context != null) { 
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo(); 
+            if (mNetworkInfo != null) { 
+                return mNetworkInfo.isAvailable(); 
+            } 
+        } 
+        return false; 
+    }
+
+    public boolean isWifiConnected(Context context) { 
+        if (context != null) { 
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+            NetworkInfo mWiFiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI); 
+            if (mWiFiNetworkInfo != null) { 
+                return mWiFiNetworkInfo.isAvailable(); 
+            } 
+        } 
+        return false; 
+    }
+
+    public boolean isMobileConnected(Context context) { 
+        if (context != null) { 
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+            NetworkInfo mMobileNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE); 
+            if (mMobileNetworkInfo != null) { 
+                return mMobileNetworkInfo.isAvailable(); 
+            } 
+        } 
+        return false; 
+    }
+    
+    public static int getConnectedType(Context context) { 
+        if (context != null) { 
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE); 
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo(); 
+            if (mNetworkInfo != null && mNetworkInfo.isAvailable()) { 
+                return mNetworkInfo.getType(); 
+            } 
+        } 
+        return -1; 
+    }
+
+    public void toggleWiFi(Context context, boolean enabled) {
+		WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+		wm.setWifiEnabled(enabled);
+    }
+    
+    // public void toggleMobileData(Context context, boolean enabled) {  
+    //     ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);  
+    //     Class<?> conMgrClass = null; // ConnectivityManager类  
+    //     Field iConMgrField = null; // ConnectivityManager类中的字段  
+    //     Object iConMgr = null; // IConnectivityManager类的引用  
+    //     Class<?> iConMgrClass = null; // IConnectivityManager类  
+    //     Method setMobileDataEnabledMethod = null; // setMobileDataEnabled方法  
+    //     try {   
+    //         // 取得ConnectivityManager类   
+    //     conMgrClass = Class.forName(conMgr.getClass().getName());   
+    //     // 取得ConnectivityManager类中的对象mService   
+    //     iConMgrField = conMgrClass.getDeclaredField("mService");   
+    //     // 设置mService可访问  
+    //         iConMgrField.setAccessible(true);   
+    //     // 取得mService的实例化类IConnectivityManager   
+    //     iConMgr = iConMgrField.get(conMgr);   
+    //     // 取得IConnectivityManager类   
+    //     iConMgrClass = Class.forName(iConMgr.getClass().getName());   
+    //     // 取得IConnectivityManager类中的setMobileDataEnabled(boolean)方法   
+    //     setMobileDataEnabledMethod = iConMgrClass.getDeclaredMethod("setMobileDataEnabled", Boolean.TYPE);   
+    //     // 设置setMobileDataEnabled方法可访问   
+    //     setMobileDataEnabledMethod.setAccessible(true);   
+    //     // 调用setMobileDataEnabled方法   
+    //     setMobileDataEnabledMethod.invoke(iConMgr, enabled);  
+    //     } catch (ClassNotFoundException e) {   
+    //         e.printStackTrace();  
+    //     } catch (NoSuchFieldException e) {   
+    //         e.printStackTrace();  
+    //     } catch (SecurityException e) {   
+    //         e.printStackTrace();  
+    //     } catch (NoSuchMethodException e) {   
+    //         e.printStackTrace();  
+    //     } catch (IllegalArgumentException e) {   
+    //         e.printStackTrace();  
+    //     } catch (IllegalAccessException e) {   
+    //         e.printStackTrace();  
+    //     } catch (InvocationTargetException e) {   
+    //         e.printStackTrace();  
+    //     } 
+    // }
+
+    // public static void setDataEnabled(Context context, boolean enabled) {
+    //     // try {
+    //     //     TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    //     //     Method setMobileDataEnabledMethod = tm.getClass().getDeclaredMethod("setDataEnabled", boolean.class);
+    //     //     if (null != setMobileDataEnabledMethod) {
+    //     //         setMobileDataEnabledMethod.invoke(tm, enabled);
+    //     //     }
+    //     // } catch (Exception e) {
+    //     //     e.printStackTrace();
+    //     // }
+    //     TelephonyManager teleManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    //     Class[] getArgArray = null;
+    //     Class[] setArgArray = new Class[] {boolean.class};
+    //     Object[] getArgInvoke = null;
+    //     try {
+    //         Method mGetMethod = teleManager.getClass().getMethod("getDataEnabled", getArgArray);
+    //         Method mSetMethod = teleManager.getClass().getMethod("setDataEnabled", setArgArray);
+    //         boolean isOpen = (Boolean) mGetMethod.invoke(teleManager, getArgInvoke);
+    //         if (isOpen) {
+    //             mSetMethod.invoke(teleManager, false);
+    //         } else {
+    //             mSetMethod.invoke(teleManager, true);
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
+
+    @ReactMethod
+    public void getConnectionType(Callback callback){
+        Context context = getReactApplicationContext();
+        int result = this.getConnectedType(context);
+        String connectionType = "No Connection";
+        if(result == -1) {
+            connectionType = "No Connection";
+        } else if(result == 0) {
+            connectionType = "Using 3G/4G";
+        } else if(result == 1) {
+            connectionType = "Using Wi-Fi";
+        }
+
+        // Toast.makeText(context, String.valueOf(result), Toast.LENGTH_LONG).show();
+
+        // this.setDataEnabled(getReactApplicationContext(), false);        
+        callback.invoke(connectionType);
+    }
+
+    @ReactMethod
+    public void turnOnWifi4G(Callback callback) {
+        Context context = getReactApplicationContext();
+        int result = this.getConnectedType(context);
+        String returnInfo;
+
+        if(result == -1) {
+            toggleWiFi(context, true);
+            returnInfo = "Wi-Fi 已打开\n由于系统权限问题，3G/4G 需要手动打开";
+        } else {
+            returnInfo = "网络已连接，不需要打开 Wi-Fi 或 3G/4G";
+        }
+
+        callback.invoke(returnInfo);
     }
 } 
