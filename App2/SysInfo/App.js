@@ -4,7 +4,11 @@ import {
     View,
 	Button,
 	Platform,
-	StyleSheet
+	FlatList,
+	StyleSheet,
+	Text,
+	ScrollView,
+	TouchableNativeFeedback
 } from 'react-native';
 
 import { NativeModules } from "react-native";
@@ -36,26 +40,158 @@ const SysInfo = NativeModules.SysInfo;
 // };
 
 export default class App extends Component {
+	constructor(props) {
+		super(props);
+		this.state = { showText: '' };
+	
+		// 每1000毫秒对showText状态做一次取反操作
+		// setInterval(() => {
+		// 	this.setState(previousState => {
+		// 		return { isShowingText: !previousState.isShowingText };
+		// 	});
+		// }, 1000);
+	}
+
     render() {
+		let content;
+		if(this.state.showText === '') {
+			content = (<Text></Text>);
+		} else {
+			content = (<Text>{this.state.showText}</Text>)
+		}
+
         return (
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center" }}>
-				<Button 
-					color="#205c42"
-					title="Test"
-					onPress={() => {
-						// SysInfo.show('14');
-						// SysInfo.getLanguage();
-						SysInfo.getAllInputMethods();
-					}} />
+            <View style={{flex: 1, flexDirection: 'column', justifyContent: "center", alignItems: "center"}}>
+				<View style={{flex: 1, flexDirection: 'row', height: 50}}>
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getCurrentLanguage(x => {
+								this.setState(previousState => {
+									return {showText: '当前使用语言为：\n' + x};
+								});
+							});	
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>当前语言</Text>
+						</View>
+					</TouchableNativeFeedback>
+
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getAllLanguages(x => {
+								this.setState(previousState => {
+									return {showText: '所有可选语言为：\n' + x};
+								});
+							});
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>所有语言</Text>
+						</View>
+					</TouchableNativeFeedback>
+
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getAllFonts(x => {
+								this.setState(previousState => {
+									return {showText: '所有可用字体为：\n' + x};
+								});
+							});
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>所有字体</Text>
+						</View>
+					</TouchableNativeFeedback>
+				</View>
+
+				<View style={{flex: 1, flexDirection: 'row', height: 50}}>
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getFontSize(x => {
+								this.setState(previousState => {
+									return {showText: '默认字体大小为：\n' + x};
+								});
+							});	
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>字体大小</Text>
+						</View>
+					</TouchableNativeFeedback>
+
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getDefaultInputMethod(x => {
+								this.setState(previousState => {
+									return {showText: '当前输入法为：\n' + x};
+								});
+							});
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>当前输入法</Text>
+						</View>
+					</TouchableNativeFeedback>
+
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getAllInputMethods(x => {
+								this.setState(previousState => {
+									return {showText: '所有可用输入法为：\n' + x};
+								});
+							});
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>所有输入法</Text>
+						</View>
+					</TouchableNativeFeedback>
+				</View>
+
+				<View style={{flex: 1, flexDirection: 'row', height: 50}}>
+					<TouchableNativeFeedback
+						onPress={() => {
+							SysInfo.getCurrentTime(x => {
+								this.setState(previousState => {
+									return {showText: '当前时间为：\n' + x};
+								});
+							});	
+						}}
+						background={Platform.OS === 'android' ? TouchableNativeFeedback.SelectableBackground() : ''}>
+						<View style={styles.button}>
+							<Text style={styles.buttonText}>当前时间</Text>
+						</View>
+					</TouchableNativeFeedback>
+				</View>
+				
+				<View style={{flex: 10, flexDirection: 'column', justifyContent: "center", alignItems: "center" }}>
+					<ScrollView style={{maxWidth: 300}}>
+						{content}
+					</ScrollView>
+				</View>
             </View>
         );
     }
 }
 
-var styles = StyleSheet.create({
-	button: {
-		width: 100,
-		height: 100,
-		padding: 20
-	}
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 60,
+    alignItems: 'center'
+  },
+  button: {
+	marginBottom: 10,
+	margin: 5,
+	width: 110,
+	height: 40,
+	justifyContent: "center",
+    alignItems: 'center',
+    backgroundColor: '#2196F3'
+  },
+  buttonText: {
+    padding: 10,
+    color: 'white'
+  }
 });

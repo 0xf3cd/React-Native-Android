@@ -23,10 +23,6 @@ import java.util.Calendar;
 import java.util.Date;  
 import java.util.GregorianCalendar;  
 
-// import android.app.ActivityManagerNative;
-// import android.content.res.Configuration;
-// import java.awt.GraphicsEnvironment;
-
 import android.widget.TextView;  
 
 import android.content.Context; 
@@ -63,14 +59,15 @@ public class SysInfo extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void getCurrentLanguage() {
+    public void getCurrentLanguage(Callback callback) {
         Locale locale = Locale.getDefault();
         String lang = locale.getLanguage() + "-" + locale.getCountry();
-        Toast.makeText(getReactApplicationContext(), lang, Toast.LENGTH_LONG).show();
+        // Toast.makeText(getReactApplicationContext(), lang, Toast.LENGTH_LONG).show();
+        callback.invoke(lang);
     }
 
     @ReactMethod
-    public void getAllLanguages(){
+    public void getAllLanguages(Callback callback){
         Locale chinaLocale;
         Locale newLocale,testLocale;
         Locale locales[] = Locale.getAvailableLocales();
@@ -78,7 +75,10 @@ public class SysInfo extends ReactContextBaseJavaModule {
         for(Locale locale:locales){
             //获取系统支持的语言和国家
             // System.out.println("Language："+locale.getLanguage()+"   Country:"+locale.getCountry());
-            result += "Language：" + locale.getLanguage() + "   Country:" + locale.getCountry() + "\n";
+            if(locale.getCountry() != "") {
+                // result += "Language：" + locale.getLanguage() + "   Country:" + locale.getCountry() + "\n";
+                result += locale.getLanguage() + "-" + locale.getCountry() + "\n";
+            }
 
             //预览该国家语言
             // newLocale = new Locale(locale.getLanguage(),locale.getCountry());
@@ -94,19 +94,21 @@ public class SysInfo extends ReactContextBaseJavaModule {
             // result += "     Display:"+testLocale.getDisplayLanguage()+"   "+testLocale.getDisplayCountry() + "\n";
         }
 
-        Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
+        // Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
+        callback.invoke(result);
     }
 
     @ReactMethod
-    public void getCurrentTime() {
+    public void getCurrentTime(Callback callback) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");         
         String timeStr = formatter.format(System.currentTimeMillis());  
 
-        Toast.makeText(getReactApplicationContext(), timeStr, Toast.LENGTH_LONG).show();
+        // Toast.makeText(getReactApplicationContext(), timeStr, Toast.LENGTH_LONG).show();
+        callback.invoke(timeStr);
     }
 
     @ReactMethod
-    public void getAllFonts() { 
+    public void getAllFonts(Callback callback) { 
         String result = "";
 
         ArrayList<String> fontNames = new ArrayList<String>();
@@ -121,27 +123,21 @@ public class SysInfo extends ReactContextBaseJavaModule {
             }
         }
 
-        Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
+        // Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
+        callback.invoke(result);
     } 
 
     @ReactMethod
-    public void getFontSize() {
-        // Configuration mCurConfig = new Configuration();
-
-        // try {
-        //     mCurConfig.updateFrom(ActivityManagerNative.getDefault().getConfiguration());
-        // } catch (RemoteException e) {
-        //     // Log.w(TAG, "Unable to retrieve font size");
-        // }
- 
-        // Log.w(TAG, "getFontSize(), Font size is " + mCurConfig.fontScale);
+    public void getFontSize(Callback callback) {
         TextView tv = new TextView(getReactApplicationContext());
+        Float size = tv.getTextSize()/(tv.getResources().getDisplayMetrics().density);
 
-        Toast.makeText(getReactApplicationContext(),"默认字体大小为："+tv.getTextSize()/(tv.getResources().getDisplayMetrics().density),Toast.LENGTH_LONG).show();
+        // Toast.makeText(getReactApplicationContext(),"默认字体大小为："+,Toast.LENGTH_LONG).show();
+        callback.invoke(size);
     }
 
     @ReactMethod
-    public void getDefaultInputMethod() {
+    public void getDefaultInputMethod(Callback callback) {
         Context context = getReactApplicationContext();
         String mDefaultInputMethodPkg = null;
 
@@ -155,12 +151,13 @@ public class SysInfo extends ReactContextBaseJavaModule {
             mDefaultInputMethodPkg = mDefaultInputMethodCls.split("/")[0];
             // Log.d(TAG, "mDefaultInputMethodPkg=" + mDefaultInputMethodPkg);
         }
-        Toast.makeText(getReactApplicationContext(), mDefaultInputMethodPkg, Toast.LENGTH_LONG).show();
 
+        // Toast.makeText(getReactApplicationContext(), mDefaultInputMethodPkg, Toast.LENGTH_LONG).show();
+        callback.invoke(mDefaultInputMethodPkg);
     }
 
     @ReactMethod
-    public void getAllInputMethods(){
+    public void getAllInputMethods(Callback callback){
         Context context = getReactApplicationContext();
 
         String result = "";
@@ -172,7 +169,7 @@ public class SysInfo extends ReactContextBaseJavaModule {
             result += name + mi.getId() + '\n';
         }
 
-        Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
-
+        // Toast.makeText(getReactApplicationContext(), result, Toast.LENGTH_LONG).show();
+        callback.invoke(result);
     }
-}
+} 
