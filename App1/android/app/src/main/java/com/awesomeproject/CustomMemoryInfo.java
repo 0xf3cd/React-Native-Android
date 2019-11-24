@@ -25,5 +25,4 @@ public class CustomMemoryInfo implements ReactPackage {
 
     return modules;
   }
-
 }

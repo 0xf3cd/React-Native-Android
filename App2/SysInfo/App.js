@@ -10,7 +10,7 @@ import {
 	ScrollView,
 	TouchableNativeFeedback
 } from 'react-native';
-import NetInfo from "@react-native-community/netinfo";
+// import NetInfo from "@react-native-community/netinfo";
 
 import { NativeModules } from "react-native";
 const SysInfo = NativeModules.SysInfo;

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
     Alert,
-    View,
+	View,
+	Text,
 	Button,
 	Platform,
 	StyleSheet
